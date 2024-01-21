@@ -1,0 +1,13 @@
+include:
+  - project: 'bhpc/ci'
+    file: '/java11.yml'
+  - project: 'bhpc/ci'
+    file: '/helm/base.yml'
+  - project: 'bhpc/ci'
+    file: '/helm/master.yml'
+
+variables:
+  APP_ENTRY: "otc-server"
+  APP_HTTP_PORT: 7241
+  APP_GRPC_PORT: 7231
+  

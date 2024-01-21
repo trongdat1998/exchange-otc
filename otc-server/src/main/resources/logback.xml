@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <property name="app_name" value="otc-server"/>
+    <contextName>${app_name}</contextName>
+    <property name="log.path" value="logs"/>
+
+    <property name="log.default_pattern" value="%d{yyyy-MM-dd HH:mm:ss.SSS}|%-5level|%X{traceId}|%logger{1}|%msg%n"/>
+    <property name="log.default_max_history" value="7"/>
+    <property name="log.default_charset" value="UTF-8"/>
+
+    <include resource="io/bhex/base/log/log-common.xml"/>
+
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>${log.default_pattern}</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="APP" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/${app_name}.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/%d{yyyy-MM-dd}.${app_name}.gz</fileNamePattern>
+            <maxHistory>${log.default_max_history}</maxHistory>
+        </rollingPolicy>
+<!--        <encoder>
+            <pattern>${log.default_pattern}%ex{short}</pattern>
+            <charset>${log.default_charset}</charset>
+        </encoder>-->
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>${DEFAULT_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="ROOT_LOGGER" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/info.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/%d{yyyy-MM-dd}.info.gz</fileNamePattern>
+            <maxHistory>${log.default_max_history}</maxHistory>
+        </rollingPolicy>
+<!--        <encoder>
+            <pattern>${log.default_pattern}%ex{short}</pattern>
+            <charset>${log.default_charset}</charset>
+        </encoder>-->
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>${DEFAULT_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ROOT_LOGGER"/>
+        <appender-ref ref="STDOUT"/>
+    </root>
+
+    <!-- all logger under io.bhex package goes to APP -->
+    <logger name="io.bhex" level="INFO" additivity="false">
+        <appender-ref ref="APP"/>
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <!-- schedule tasks -->
+    <appender name="TASK" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/task.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/%d{yyyy-MM-dd}.task.gz</fileNamePattern>
+            <maxHistory>${log.default_max_history}</maxHistory>
+        </rollingPolicy>
+<!--        <encoder>
+            <pattern>${log.default_pattern}%ex{short}</pattern>
+            <charset>${log.default_charset}</charset>
+        </encoder>-->
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>${DEFAULT_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="HTTP_ACCESS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/http_access.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/%d{yyyyMMdd}.http_access.log</fileNamePattern>
+            <maxHistory>${log.default_max_history}</maxHistory>
+        </rollingPolicy>
+<!--        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%msg%n</pattern>
+            <charset>${log.default_charset}</charset>
+        </encoder>-->
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>${DEFAULT_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <!-- grpc log start -->
+    <appender name="GRPC_ACCESS_SYNC" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/grpc_access.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/%d{yyyyMMdd}.grpc_access.log</fileNamePattern>
+            <maxHistory>${log.default_max_history}</maxHistory>
+        </rollingPolicy>
+<!--        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS}|%msg%n</pattern>
+            <charset>${log.default_charset}</charset>
+        </encoder>-->
+        <encoder>
+            <pattern>${FILE_LOG_PATTERN}</pattern>
+            <charset>${DEFAULT_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <appender name="GRPC_ACCESS" class="ch.qos.logback.classic.AsyncAppender">
+        <appender-ref ref="GRPC_ACCESS_SYNC"/>
+        <queueSize>2000</queueSize>
+        <maxFlushTime>1000</maxFlushTime>
+    </appender>
+
+    <logger name="grpc_server_access" level="INFO" additivity="false">
+        <appender-ref ref="GRPC_ACCESS"/>
+    </logger>
+    <logger name="grpc_client_access" level="INFO" additivity="false">
+        <appender-ref ref="GRPC_ACCESS"/>
+    </logger>
+    <logger name="io.bhex.base.grpc" level="INFO" additivity="false">
+        <appender-ref ref="GRPC_ACCESS"/>
+    </logger>
+
+    <!-- grpc log end -->
+
+    <!-- mysql log start -->
+    <appender name="MYSQL" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/mysql.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/%d{yyyy-MM-dd}.mysql.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai}|%level|%logger{1}|%msg%n</pattern>
+            <charset>${DEFAULT_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <logger name="com.mysql" level="INFO" additivity="false">
+        <appender-ref ref="MYSQL"/>
+    </logger>
+    <logger name="org.springframework.jdbc" level="INFO" additivity="false">
+        <appender-ref ref="MYSQL"/>
+    </logger>
+    <logger name="com.zaxxer.hikari" level="INFO" additivity="false">
+        <appender-ref ref="MYSQL"/>
+    </logger>
+    <logger name="org.mybatis" level="INFO" additivity="false">
+        <appender-ref ref="MYSQL"/>
+    </logger>
+    <logger name="org.apache.ibatis" level="INFO" additivity="false">
+        <appender-ref ref="MYSQL"/>
+    </logger>
+    <!-- mysql log end -->
+
+    <!-- queue log start -->
+    <appender name="QUEUE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${log.path}/queue.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${log.path}/%d{yyyy-MM-dd}.queue.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS,Asia/Shanghai}|%level|%logger{1}|%msg%n</pattern>
+            <charset>${DEFAULT_CHARSET}</charset>
+        </encoder>
+    </appender>
+
+    <logger name="io.bhex.base.mq" level="INFO" additivity="false">
+        <appender-ref ref="QUEUE"/>
+    </logger>
+    <logger name="org.apache.rocketmq" level="INFO" additivity="false">
+        <appender-ref ref="QUEUE"/>
+    </logger>
+    <logger name="RocketmqClient" level="INFO" additivity="false">
+        <appender-ref ref="QUEUE"/>
+    </logger>
+    <!-- queue log end -->
+
+    <!-- log level adjust if required -->
+    <logger name="org.springframework" level="INFO"/>
+
+</configuration>

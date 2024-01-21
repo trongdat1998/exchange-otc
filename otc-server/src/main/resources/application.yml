@@ -1,0 +1,65 @@
+spring:
+  application:
+    name: otc-server
+  datasource:
+    primary:
+      type: io.bhex.base.mysql.BHMysqlDataSource
+      url: jdbc:mysql://broker-server-db:3306/exchange_otc?serverTimezone=UTC&characterEncoding=utf8&useUnicode=true&useSSL=false
+      username: broker-server-write
+      password: xxxxxx
+      driver-class-name: com.mysql.cj.jdbc.Driver
+      hikari:
+        maximum-pool-size: 300
+        minimum-idle: 30
+        max-lifetime: 30000
+        connectionInitSql: select 1 from dual
+
+  redis:
+    cluster:
+      nodes:
+        - broker-server-redis:6379
+
+  rocketmq:
+    name-servers: mq-namesrv.bluehelix:9876
+    producer-group: trade-producer-group
+    #runEnv: bhex
+
+  tracing:
+    #default value is true
+    enableTracing: false
+    #the reporter's address to zipkin
+    reporter.zipkin.url: http://127.0.0.1:9411/api/v2/spans
+
+grpc:
+  port: 7231
+  server-worker-count: 300
+  client-worker-count: 200
+
+server:
+  port: 7241
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+    default-statement-timeout: 10
+
+otc:
+  stubDeadline: 8000
+  channelInfo:
+    - channelName: 'bhServer'
+      host: 'bh-server.bluehelix'
+      port: 7011
+      useSsl: false
+    - channelName: 'quoteDataServer'
+      host: 'quote-data-service.exchange'
+      port: 7063
+      useSsl: false
+
+pagehelper:
+  helperDialect: mysql
+  reasonable: true
+  supportMethodsArguments: true
+  params: count=countSql
+
+app:
+  newFeatureEnable: false
